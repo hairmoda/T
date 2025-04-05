@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Metaverse 3D NFT Viewer</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      color: #0ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    model-viewer {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 30px #00ffff66;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>👾 My Metaverse NFT</h1>
+
+  <model-viewer
+    alt="My Metaverse 3D Character"
+    src="./models/metaverse-character.glb"
+    environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
+    poster="./images/placeholder.jpg"
+    shadow-intensity="1"
+    camera-controls
+    auto-rotate
+    touch-action="pan-y"
+    style="width: 90%; max-width: 700px; height: 600px;">
+  </model-viewer>
+
+</body>
+</html>
