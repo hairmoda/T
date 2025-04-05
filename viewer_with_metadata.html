@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NFT 3D Viewer with Metadata</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      body {
+        background: radial-gradient(circle at center, #01010f 0%, #000000 100%);
+        color: #00f9ff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      model-viewer {
+        width: 60vw;
+        height: 60vh;
+        border-radius: 20px;
+        box-shadow: 0 0 30px #00f9ff77;
+        margin-bottom: 20px;
+      }
+      .genes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+      .gene {
+        background: #111927;
+        padding: 10px 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #00f9ff55;
+        min-width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="nft-name">Quantum Avatar #001</h1>
+    <model-viewer 
+      src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      alt="3D NFT" 
+      ar 
+      auto-rotate 
+      camera-controls 
+      environment-image="neutral" 
+      shadow-intensity="1"
+    ></model-viewer>
+    
+    <div id="gene-container" class="genes">
+      <div class="gene"><strong>Energy:</strong> 85</div>
+      <div class="gene"><strong>Ether:</strong> 60</div>
+      <div class="gene"><strong>Patience:</strong> 72</div>
+      <div class="gene"><strong>Kindness:</strong> 55</div>
+      <div class="gene"><strong>Expert:</strong> 92</div>
+      <div class="gene"><strong>Leader:</strong> 68</div>
+      <div class="gene"><strong>Developer:</strong> 77</div>
+      <div class="gene"><strong>Engineer:</strong> 81</div>
+      <div class="gene"><strong>Artist:</strong> 49</div>
+    </div>
+  </body>
+</html>
