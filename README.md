@@ -1,8 +1,10 @@
+# 🧠 Metaverse UI Prototype
+
+```html
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Metaverse UI Prototype</title>
   <style>
     body {
@@ -88,8 +90,8 @@
     </div>
   </div>
 
-  <div style="text-align: center;">
-    <a href="#" class="button">اربط محفظتك</a>
+  <div style="text-align:center;">
+    <a href="#" class="button">🔗 اربط محفظتك</a>
   </div>
 </body>
 </html>
