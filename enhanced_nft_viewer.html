@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Metaverse NFT Viewer</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #000014, #01010f);
+      color: #00f9ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-top: 20px;
+      text-shadow: 0 0 10px #0ff;
+    }
+    model-viewer {
+      width: 70vw;
+      height: 70vh;
+      border-radius: 20px;
+      box-shadow: 0 0 30px #00f9ff88;
+      margin-top: 20px;
+    }
+    .genes {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .gene {
+      background: #111927;
+      border: 1px solid #00f9ff55;
+      border-radius: 12px;
+      padding: 12px 20px;
+      box-shadow: 0 0 15px #00f9ff33;
+      min-width: 120px;
+      text-align: center;
+    }
+    .info {
+      margin-top: 40px;
+      background: #0a0f1c;
+      padding: 20px 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00f9ff22;
+      max-width: 700px;
+      width: 90%;
+    }
+    .info p {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧬 Quantum Avatar #001</h1>
+
+  <model-viewer
+    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+    alt="3D NFT Model"
+    ar
+    auto-rotate
+    camera-controls
+    environment-image="neutral"
+    shadow-intensity="1"
+  ></model-viewer>
+
+  <div class="genes">
+    <div class="gene">⚡ Energy: 85</div>
+    <div class="gene">💫 Ether: 60</div>
+    <div class="gene">⏳ Patience: 72</div>
+    <div class="gene">💖 Kindness: 55</div>
+    <div class="gene">🧠 Expert: 92</div>
+    <div class="gene">🎯 Leader: 68</div>
+    <div class="gene">👨‍💻 Developer: 77</div>
+    <div class="gene">⚙️ Engineer: 81</div>
+    <div class="gene">🎨 Artist: 49</div>
+  </div>
+
+  <div class="info">
+    <p><strong>Owner:</strong> 0x9f0E...273BBB</p>
+    <p><strong>Mint Date:</strong> Apr 2025</p>
+    <p><strong>Contract:</strong> AIMT NFT Upgradeable</p>
+    <p><strong>Status:</strong> Active | Viewable in Wallet</p>
+  </div>
+</body>
+</html>
