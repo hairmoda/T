@@ -1,0 +1,47 @@
+{
+  "name": "AIMT Intelligent NFT",
+  "description": "NFT مدعوم بجينات ذكية وخصائص مستقبلية.",
+  "image": "https://example.com/nft.jpg",
+  "attributes": [
+    {
+      "trait_type": "quantum_core",
+      "value": "نواة طاقة كمومية تتفاعل مع محيط NFT وتُحدّث نفسها"
+    },
+    {
+      "trait_type": "neural_sync",
+      "value": "تزامن عصبي فائق الذكاء مع المستخدم أو النظام"
+    },
+    {
+      "trait_type": "ethereal_plasma",
+      "value": "غلاف بلازمي مضاد للاختراق يدور حول الشخصية"
+    },
+    {
+      "trait_type": "legend_tier",
+      "value": "تصنيف أسطوري يمنح خصائص نادرة وقوة في التصويت"
+    },
+    {
+      "trait_type": "core_glow",
+      "value": "طاقة مركزية مضيئة تغيّر لونها حسب الحالة"
+    },
+    {
+      "trait_type": "adaptive_repair",
+      "value": "إصلاح ذاتي فوري عبر تقنية نانوية"
+    },
+    {
+      "trait_type": "aura_field",
+      "value": "هالة مرئية تتفاعل مع المزاج والطاقة حولها"
+    },
+    {
+      "trait_type": "meta_sense",
+      "value": "قدرة استشعار للواقع الافتراضي والتغيرات البيئية"
+    },
+    {
+      "trait_type": "dimensional_memory",
+      "value": "ذاكرة متعددة الأبعاد تخزن أحداث metaverse"
+    },
+    {
+      "trait_type": "starlight_bond",
+      "value": "ارتباط بصري فريد مع عقدك الذكي أو الشبكة الكونية"
+    }
+  ]
+}
