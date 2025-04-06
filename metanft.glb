@@ -1,0 +1,18 @@
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, useGLTF } from '@react-three/drei'
+
+function Model() {
+  const glb = useGLTF('https://blue-tiny-peacock-226.mypinata.cloud/ipfs/bafybeidakqsiah4htm2lltluvovkd2vtu2futvqkh2fdct2rz57e5zcrcm/metanft.glb')
+  return <primitive object={glb.scene} scale={1.5} />
+}
+
+export default function NFTViewer() {
+  return (
+    <Canvas style={{ height: '100vh' }}>
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      <Model />
+      <OrbitControls />
+    </Canvas>
+  )
+}
