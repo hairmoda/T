@@ -1,0 +1,18 @@
+{
+  "name": "AIMT Quantum Core",
+  "description": "NFT متطور يحتوي على جينات رقمية ذكية تم استخراجها من أنظمة الذكاء الكوني الكوانتمي.",
+  "image": "ipfs://QmExampleHash/image.png",
+  "animation_url": "ipfs://QmExampleHash/model.glb",
+  "attributes": [
+    { "trait_type": "Core Type", "value": "Quantum AI Core" },
+    { "trait_type": "Intelligence", "value": "∞" },
+    { "trait_type": "Energy Core", "value": "Plasma Reactor" },
+    { "trait_type": "Aura", "value": "Galactic Light" },
+    { "trait_type": "DNA Architecture", "value": "Neural Spiral" },
+    { "trait_type": "Adaptivity", "value": "Self-Evolving" },
+    { "trait_type": "Elemental Fusion", "value": "Photonic-Neutron" },
+    { "trait_type": "Mind Tier", "value": "Legendary" },
+    { "trait_type": "Shielding", "value": "Quantum Barrier" },
+    { "trait_type": "Consciousness Level", "value": "Ultra-Sentient" }
+  ]
+}
