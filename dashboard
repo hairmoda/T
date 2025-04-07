@@ -1,0 +1,47 @@
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+
+export default function Dashboard() {
+  const [walletAddress, setWalletAddress] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [connected, setConnected] = useState(false);
+
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const address = accounts[0];
+        setWalletAddress(address);
+        setConnected(true);
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const ethBalance = await provider.getBalance(address);
+        setBalance(ethers.formatEther(ethBalance));
+      } catch (err) {
+        console.error('Wallet connection failed:', err);
+      }
+    } else {
+      alert('Please install MetaMask to use this feature.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0d0d1a] text-white flex flex-col items-center justify-center p-6">
+      <h1 className="text-4xl font-bold mb-6">🚀 Metaverse Dashboard</h1>
+
+      {!connected ? (
+        <button
+          onClick={connectWallet}
+          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-xl text-black font-semibold shadow-lg transition">
+          Connect Wallet
+        </button>
+      ) : (
+        <div className="text-center">
+          <p className="mb-2 text-lg">🔗 Connected: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</p>
+          <p className="text-xl font-mono">Ξ Balance: {balance} ETH</p>
+        </div>
+      )}
+    </div>
+  );
+}
