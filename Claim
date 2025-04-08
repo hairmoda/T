@@ -1,0 +1,69 @@
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { ethers } from 'ethers';
+
+const NFT_CONTRACT = '0xYourNFTContractAddress';
+const ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)',
+  'function tokenURI(uint256 tokenId) view returns (string)'
+];
+
+export default function ClaimPage() {
+  const { address, isConnected } = useAccount();
+  const [nfts, setNfts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      loadNFTs();
+    }
+  }, [address]);
+
+  async function loadNFTs() {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const nftContract = new ethers.Contract(NFT_CONTRACT, ABI, provider);
+    const balance = await nftContract.balanceOf(address);
+    const results = [];
+
+    for (let i = 0; i < Number(balance); i++) {
+      const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
+      const uri = await nftContract.tokenURI(tokenId);
+      const res = await fetch(uri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+      const metadata = await res.json();
+      const reward = calculateReward(metadata.dna);
+      results.push({ tokenId, metadata, reward });
+    }
+
+    setNfts(results);
+  }
+
+  function calculateReward(dna: any) {
+    let reward = dna?.xp ? dna.xp / 100 : 0;
+    if (dna.skill === 'Engineer') reward *= 1.25;
+    if (dna.energy > 80) reward *= 1.1;
+    if (dna.rarity === 'Legendary') reward *= 1.5;
+    return parseFloat(reward.toFixed(2));
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl text-purple-400 font-bold mb-6">🎁 Claim Center</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {nfts.map(({ tokenId, metadata, reward }) => (
+          <div key={tokenId.toString()} className="bg-[#111] p-4 rounded-xl shadow-md">
+            <h2 className="text-purple-300 font-semibold">{metadata.name}</h2>
+            <img src={metadata.image?.replace('ipfs://', 'https://ipfs.io/ipfs/')} alt="nft" className="w-full rounded mb-3" />
+            <div className="mb-2">
+              <div className="w-full bg-gray-800 h-4 rounded">
+                <div className="bg-purple-500 h-4 rounded" style={{ width: `${Math.min((metadata.dna?.xp || 0) / 10, 100)}%` }}></div>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">XP: {metadata.dna?.xp}</p>
+            </div>
+            <p className="text-sm text-green-400 mb-2">Estimated Reward: {reward} MET</p>
+            <button className="bg-green-600 hover:bg-green-500 px-4 py-1 rounded text-sm font-bold">🎁 Claim</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
