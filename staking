@@ -1,0 +1,124 @@
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
+
+const STAKING_CONTRACT = '0xYourStakingContractAddress';
+const NFT_CONTRACT = '0xYourNFTContractAddress';
+
+const STAKING_ABI = [
+  'function getStakedTokens(address user) view returns (uint256[])',
+  'function stake(uint256 tokenId) external',
+  'function unstake(uint256 tokenId) external',
+  'function claimRewards() external',
+  'function pendingRewards(address user) view returns (uint256)'
+];
+
+const NFT_ABI = [
+  'function tokenURI(uint256 tokenId) view returns (string)'
+];
+
+export default function StakingPage() {
+  const { address, isConnected } = useAccount();
+  const [nfts, setNfts] = useState<any[]>([]);
+  const [rewards, setRewards] = useState('0');
+
+  useEffect(() => {
+    if (isConnected && address) {
+      fetchStakedNFTs();
+      fetchRewards();
+    }
+  }, [address]);
+
+  async function fetchStakedNFTs() {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, provider);
+      const nftContract = new ethers.Contract(NFT_CONTRACT, NFT_ABI, provider);
+      const tokenIds = await stakingContract.getStakedTokens(address);
+
+      const items = await Promise.all(
+        tokenIds.map(async (tokenId: any) => {
+          const uri = await nftContract.tokenURI(tokenId);
+          const res = await fetch(uri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+          const metadata = await res.json();
+          return { tokenId, metadata };
+        })
+      );
+
+      setNfts(items);
+    } catch (err) {
+      console.error('Error loading staked NFTs:', err);
+    }
+  }
+
+  async function fetchRewards() {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, provider);
+      const result = await stakingContract.pendingRewards(address);
+      setRewards(ethers.formatEther(result));
+    } catch (err) {
+      console.error('Error fetching rewards:', err);
+    }
+  }
+
+  async function claim() {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
+      const tx = await stakingContract.claimRewards();
+      await tx.wait();
+      fetchRewards();
+    } catch (err) {
+      console.error('Claim failed:', err);
+    }
+  }
+
+  async function unstake(tokenId: number) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
+      const tx = await stakingContract.unstake(tokenId);
+      await tx.wait();
+      fetchStakedNFTs();
+      fetchRewards();
+    } catch (err) {
+      console.error('Unstake failed:', err);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold text-purple-400 mb-6">🪐 NFT Staking Panel</h1>
+      <div className="mb-4 text-lg text-green-400">Your Pending Rewards: {rewards} MET</div>
+      <button
+        onClick={claim}
+        className="mb-6 bg-green-600 hover:bg-green-500 px-4 py-2 rounded font-bold"
+      >
+        🎁 Claim Rewards
+      </button>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {nfts.map(({ tokenId, metadata }) => (
+          <div key={tokenId.toString()} className="bg-[#111] p-4 rounded-lg shadow-md">
+            <h2 className="text-purple-300 font-semibold mb-2">{metadata.name}</h2>
+            <img src={metadata.image?.replace('ipfs://', 'https://ipfs.io/ipfs/')} alt="nft" className="w-full rounded mb-3" />
+            <ul className="text-sm text-gray-300 mb-3">
+              <li><strong>XP:</strong> {metadata.dna?.xp}</li>
+              <li><strong>Energy:</strong> {metadata.dna?.energy}</li>
+              <li><strong>Skill:</strong> {metadata.dna?.skill}</li>
+            </ul>
+            <button
+              onClick={() => unstake(tokenId)}
+              className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded text-sm"
+            >
+              ⛔ Unstake
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
