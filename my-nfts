@@ -1,0 +1,75 @@
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
+
+const CONTRACT_ADDRESS = '0xYourNFTContractAddress';
+const ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)',
+  'function tokenURI(uint256 tokenId) view returns (string)'
+];
+
+function Model({ url }: { url: string }) {
+  const glb = useGLTF(url);
+  return <primitive object={glb.scene} scale={1.5} />;
+}
+
+export default function MyNFTs() {
+  const { address, isConnected } = useAccount();
+  const [nfts, setNfts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!isConnected || !address) return;
+    loadMyNFTs();
+  }, [isConnected, address]);
+
+  async function loadMyNFTs() {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+    const balance = await contract.balanceOf(address);
+    const items = [];
+
+    for (let i = 0; i < balance; i++) {
+      const tokenId = await contract.tokenOfOwnerByIndex(address, i);
+      const uri = await contract.tokenURI(tokenId);
+      const res = await fetch(uri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+      const metadata = await res.json();
+      items.push({ tokenId, metadata });
+    }
+
+    setNfts(items);
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl text-purple-400 font-bold mb-6">🎒 My NFTs</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {nfts.map(({ tokenId, metadata }) => (
+          <div key={tokenId.toString()} className="bg-[#111] rounded-xl p-4 shadow-lg">
+            <h2 className="text-lg text-purple-300 font-semibold mb-2">{metadata.name}</h2>
+            <div className="h-48 mb-2">
+              {metadata.animation_url && (
+                <Canvas camera={{ position: [0, 1, 4], fov: 60 }}>
+                  <ambientLight intensity={0.5} />
+                  <directionalLight position={[0, 5, 5]} />
+                  <Model url={metadata.animation_url.replace('ipfs://', 'https://ipfs.io/ipfs/')} />
+                  <OrbitControls enableZoom enableRotate />
+                </Canvas>
+              )}
+            </div>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li><strong>XP:</strong> {metadata.dna?.xp}</li>
+              <li><strong>Energy:</strong> {metadata.dna?.energy}</li>
+              <li><strong>Skill:</strong> {metadata.dna?.skill}</li>
+            </ul>
+            <a href={`/nft-viewer?id=${tokenId}`} className="block mt-3 text-purple-400 underline text-sm">🔎 View NFT</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+useGLTF.preload('https://ipfs.io/ipfs/bafybeihxyzmodels456789.../models/001.glb');
