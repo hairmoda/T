@@ -67,4 +67,5 @@ export default function NFTViewer() {
   );
 }
 
-useGLTF.preload('https://ipfs.io/ipfs/' + CID_MODELS + '/models/001.glb');
+// ✅ تم تعديل هذا السطر لتفادي الخطأ في المسار
+useGLTF.preload(`https://ipfs.io/ipfs/${CID_MODELS}/001.glb`);
