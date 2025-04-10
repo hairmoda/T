@@ -1,0 +1,7 @@
+try {
+  const res = await fetch(ipfsUrl);
+  if (!res.ok) throw new Error("Failed to fetch metadata");
+  const metadata = await res.json();
+} catch (err) {
+  console.error("Error loading metadata:", err);
+}
