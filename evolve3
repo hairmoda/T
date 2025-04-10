@@ -1,0 +1,159 @@
+import { useState, useRef } from 'react';
+import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
+
+const CONTRACT_ADDRESS = '0x636d2DdCA03aBE16698AB3954A9A84a0bAc506D2';
+const ABI = [
+  'function evolve(uint256 tokenId) public',
+  'function tokenURI(uint256 tokenId) view returns (string)',
+  'function recharge(uint256 tokenId) public'
+];
+
+export default function EvolvePage() {
+  const { address, isConnected } = useAccount();
+  const [tokenId, setTokenId] = useState('');
+  const [metadata, setMetadata] = useState<any>(null);
+  const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [animating, setAnimating] = useState(false);
+
+  const audioEvolve = useRef<HTMLAudioElement>(null);
+  const audioRecharge = useRef<HTMLAudioElement>(null);
+  const audioError = useRef<HTMLAudioElement>(null);
+
+  async function loadMetadata() {
+    if (!tokenId) return;
+    setStatus('جاري تحميل بيانات NFT...');
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+      const uri = await contract.tokenURI(BigInt(tokenId));
+      const res = await fetch(uri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+      const data = await res.json();
+      setMetadata(data);
+      setStatus('✅ تم تحميل البيانات.');
+    } catch (err) {
+      console.error(err);
+      audioError.current?.play();
+      setStatus('❌ فشل في تحميل البيانات');
+    }
+  }
+
+  async function handleEvolve() {
+    if (!metadata?.dna || metadata.dna.xp < 1000) {
+      audioError.current?.play();
+      setStatus('❌ لا يمكن التطور - XP غير كافٍ');
+      return;
+    }
+    try {
+      setLoading(true);
+      setAnimating(true);
+      setStatus('🚀 جاري إرسال معاملة التطور...');
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+      const tx = await contract.evolve(BigInt(tokenId));
+      await tx.wait();
+      audioEvolve.current?.play();
+      setStatus('✅ تم التطور بنجاح! يتم تحديث البيانات...');
+      await loadMetadata();
+    } catch (err) {
+      console.error(err);
+      audioError.current?.play();
+      setStatus('❌ فشل في التطور');
+    } finally {
+      setLoading(false);
+      setTimeout(() => setAnimating(false), 1500);
+    }
+  }
+
+  async function handleRecharge() {
+    try {
+      setLoading(true);
+      setStatus('⚡ جاري إعادة شحن الطاقة...');
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+      const tx = await contract.recharge(BigInt(tokenId));
+      await tx.wait();
+      audioRecharge.current?.play();
+      setStatus('✅ تم إعادة الشحن!');
+      await loadMetadata();
+    } catch (err) {
+      console.error(err);
+      audioError.current?.play();
+      setStatus('❌ فشل في الشحن');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className={`min-h-screen bg-black text-white p-6 transition-all duration-500 ${animating ? 'animate-pulse' : ''}`}>
+      <audio ref={audioEvolve} src="/sounds/evolve.mp3" preload="auto" />
+      <audio ref={audioRecharge} src="/sounds/recharge.mp3" preload="auto" />
+      <audio ref={audioError} src="/sounds/error.mp3" preload="auto" />
+
+      <h1 className="text-3xl font-bold text-purple-400 mb-4">⚙️ Evolve NFT</h1>
+      <input
+        type="text"
+        placeholder="أدخل Token ID"
+        value={tokenId}
+        onChange={(e) => setTokenId(e.target.value)}
+        className="p-2 text-black rounded-md mb-2"
+      />
+      <button
+        onClick={loadMetadata}
+        className="bg-purple-600 px-4 py-2 rounded-md font-bold hover:bg-purple-500 mb-4"
+      >
+        🔍 تحميل NFT
+      </button>
+
+      {metadata && (
+        <div className="bg-[#111] p-4 rounded-xl shadow-lg mb-4">
+          <h2 className="text-lg text-purple-300 font-semibold">{metadata.name}</h2>
+          <div className="my-2">
+            <div className="w-full bg-gray-700 h-4 rounded">
+              <div className="bg-purple-500 h-4 rounded" style={{ width: `${Math.min((metadata.dna?.xp || 0) / 10, 100)}%` }}></div>
+            </div>
+            <p className="text-sm text-gray-400 mt-1">XP: {metadata.dna?.xp} / 1000</p>
+          </div>
+          <ul className="text-sm text-gray-300 space-y-1">
+            <li><strong>Level:</strong> {metadata.dna?.level}</li>
+            <li><strong>Energy:</strong> {metadata.dna?.energy}</li>
+            <li><strong>Skill:</strong> {metadata.dna?.skill}</li>
+          </ul>
+          {metadata.personality_profile && (
+            <div className="mt-4">
+              <h3 className="text-purple-400 font-semibold mb-2">🧠 الشخصية الرقمية:</h3>
+              <ul className="text-sm text-gray-400 space-y-1">
+                {Object.entries(metadata.personality_profile).map(([k, v]) => (
+                  <li key={k}><strong>{k}:</strong> {v}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex space-x-4">
+        <button
+          onClick={handleEvolve}
+          disabled={loading}
+          className="bg-green-600 px-4 py-2 rounded-md font-bold hover:bg-green-500"
+        >
+          🌱 Evolve NFT
+        </button>
+        <button
+          onClick={handleRecharge}
+          disabled={loading}
+          className="bg-blue-600 px-4 py-2 rounded-md font-bold hover:bg-blue-500"
+        >
+          ⚡ Recharge Energy
+        </button>
+      </div>
+
+      {status && <p className="mt-4 text-sm text-yellow-400">{status}</p>}
+    </div>
+  );
+}
